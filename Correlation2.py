@@ -1,3 +1,4 @@
+# Original Author: https://towardsdatascience.com/find-highly-correlated-stocks-with-python-77eba4fd061b - I will keep adding on to this 
 import numpy as np
 import warnings
 import pandas_datareader.data as web
