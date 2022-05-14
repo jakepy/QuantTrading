@@ -1,4 +1,3 @@
-# Author: https://towardsdatascience.com/find-highly-correlated-stocks-with-python-77eba4fd061b
 import numpy as np
 import warnings
 import pandas_datareader.data as web
@@ -6,17 +5,22 @@ import pandas as pd
 import yfinance as yf
 import datetime as dt
 from yahoo_fin import stock_info as si
-pd.set_option('display.max_rows', None)
+import pandas_ta as ta
 warnings.filterwarnings('ignore')
 yf.pdr_override()
 
-years = 1 # Adjust as needed, or use days
+## Set Params for downloading the data.
+years = 1
 start = dt.date.today() - dt.timedelta(days = int(365.25*years))
 end = dt.date.today()
 
-tickers = si.tickers_dow()
+## Choose Tickers to Pull Data From
+# dow_tickers = si.tickers_dow()
+spy_tickers = si.tickers_sp500()
+# nasdaq_tickers = si.tickers_nasdaq()
 
-history = web.get_data_yahoo(tickers, start, end)['Adj Close']
+## Download data
+history = web.get_data_yahoo(spy_tickers, start, end)['Adj Close'] ## Change parameter if needed to download the correct tickers
 stock_returns = np.log(history/history.shift(1))
 corr_matrix = stock_returns.corr()
 
@@ -34,5 +38,10 @@ def get_top_abs_correlations(df):
     au_corr = au_corr.drop(labels=labels_to_drop).sort_values(ascending=False)
     return au_corr
 
-print('Top Absolute Correlations')
+df = pd.DataFrame(get_top_abs_correlations(stock_returns))
+
+## Saves to CSV File 
+## ** MAKE SURE TO MANIPULATE THE CORRELATION TABLE NAME **
+df.to_csv('corr_tables/spy_correlation.csv', header=False) ## Also make sure you have an appropriately named folder.
+
 print(get_top_abs_correlations(stock_returns))
